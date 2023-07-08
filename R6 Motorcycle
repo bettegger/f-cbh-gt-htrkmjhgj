@@ -1,0 +1,129 @@
+
+--// Variables \\--
+local Player = game:GetService("Players")
+local Run = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Player.LocalPlayer
+local onbike = true
+local a=Instance.new("Animation") 
+a.AnimationId="rbxassetid://129342287" 
+local p=LocalPlayer.Character.Humanoid:LoadAnimation(a) 
+
+--// Code \\--
+repeat wait() until game:IsLoaded()
+if game:IsLoaded() then 
+	LocalPlayer.Character.Humanoid.WalkSpeed = 30
+	p:Play()
+end 
+
+UserInputService.InputBegan:Connect(function(Input)
+	if Input.KeyCode == onbikebutton then
+		if LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled == true then
+			LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled = false
+			LocalPlayer.Character.Humanoid.WalkSpeed = 16
+			p:Stop()
+			onbike = false
+		else
+			LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled = true
+			p:Play()
+			onbike = true
+		end
+	end
+end)
+
+UserInputService.InputBegan:Connect(function(Input)
+	if onbike == true then
+		if Input.KeyCode == SprintButton then
+			LocalPlayer.Character.Humanoid.WalkSpeed=80
+		end
+	end
+end)
+UserInputService.InputEnded:Connect(function(Input)
+	if onbike == true then
+		if Input.KeyCode == SprintButton then
+			LocalPlayer.Character.Humanoid.WalkSpeed=30
+		end
+	end
+end)
+
+UserInputService.InputBegan:Connect(function(i, t)
+	if t then return end
+	if onbike == true then
+		if i.KeyCode == Enum.KeyCode.One then
+			LocalPlayer.Character.HumanoidRootPart.RootJoint.C1 = CFrame.Angles(-2.5,0,59.69)
+		end
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(i, t)
+	if t then return end
+	if onbike == true then
+		if i.KeyCode == Enum.KeyCode.One then
+			LocalPlayer.Character.HumanoidRootPart.RootJoint.C1 = CFrame.Angles(-1.57,0,59.69)
+		end
+	end
+end)
+
+if not LocalPlayer.Character:FindFirstChild("Bike") then
+	LocalPlayer:Kick("Hat needed: https://web.roblox.com/catalog/5063566353/Atomic-Prussian-Bike")
+end
+
+if LocalPlayer.Character:FindFirstChild("RightUpperArm") then
+	LocalPlayer:Kick("This script is R6 only.")
+end
+local Notification = loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisBetterNotifications.lua"))()
+
+
+local character = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait())
+local AccessoryFirstPersonBody = false
+
+game:GetService("RunService").RenderStepped:connect(function()
+	if (character:FindFirstChild("RightUpperArm") and character:FindFirstChild("LeftUpperArm")) then
+		-- detection
+		character:FindFirstChild("RightUpperArm").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("RightLowerArm").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("RightHand").LocalTransparencyModifier = 0
+		-- Right Arm
+		character:FindFirstChild("LeftUpperArm").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("LeftLowerArm").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("LeftHand").LocalTransparencyModifier = 0
+		-- Left Arm
+		character:FindFirstChild("RightUpperLeg").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("RightLowerLeg").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("RightFoot").LocalTransparencyModifier = 0
+		-- Right Leg
+		character:FindFirstChild("LeftUpperLeg").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("LeftLowerLeg").LocalTransparencyModifier = 0
+
+		character:FindFirstChild("LeftFoot").LocalTransparencyModifier = 0
+		-- Left Leg
+		character:FindFirstChild("UpperTorso").LocalTransparencyModifier = 0	
+
+		character:FindFirstChild("LowerTorso").LocalTransparencyModifier = 0	
+		-- Torso
+	end
+	game:GetService("RunService").RenderStepped:Wait()
+	if character:FindFirstChild("Head").LocalTransparencyModifier == 1 then
+		for i, a in pairs(character:GetChildren()) do
+			if a:IsA("Accessory") then
+				if not a:FindFirstChild("Handle"):FindFirstChild("HairAttachment") then
+					if not a:FindFirstChild("Handle"):FindFirstChild("FaceCenterAttachment") then
+						if not a:FindFirstChild("Handle"):FindFirstChild("HatAttachment") then
+							a:FindFirstChild("Handle").LocalTransparencyModifier = 0
+						end	
+					end
+				end
+			end
+		end
+		wait(0)
+	end
+end)
+
+
