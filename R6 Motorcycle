@@ -183,7 +183,7 @@ if showaccessories then
 		end
 	end)
 end
-
+print("FE Motorcycle controls \n X For nitro")
 while true do wait()
 	if h.Health == 0 then
 		idling:Destroy()
