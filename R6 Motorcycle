@@ -1,129 +1,191 @@
+--[[
+motorcycle fe script
+options below
+]]--
+
+--// Options \\--
+local nitro = true									-- enabling this will make you unable to jump high but you gain more speed when jump.
+local nitrokeycode = Enum.KeyCode.X
+
+local trick = false									-- gives you the option to either enable tricks or not
+local trickkeycode = Enum.KeyCode.One				-- the keycode to do a wheelie
+
+local showaccessories = true						-- shows all the accessories equiped when in first person
+
+local motorcyclespeed = 200						-- the speed of the vehicle
+
+local slippery = true								-- makes the motorcycle slippery
 
 --// Variables \\--
-local Player = game:GetService("Players")
 local Run = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Player.LocalPlayer
+local c = game.Players.LocalPlayer.Character
+local h = c:FindFirstChildOfClass("Humanoid")
+local e=Instance.new("Animation") 
+e.AnimationId = "rbxassetid://129342287" 
+local p=h:LoadAnimation(e)
+local boost = true
+local jumpfornow = false
+local motorcycle = c:WaitForChild("Bike").Handle:FindFirstChild("AccessoryWeld")
+local rad = math.rad
 local onbike = true
-local a=Instance.new("Animation") 
-a.AnimationId="rbxassetid://129342287" 
-local p=LocalPlayer.Character.Humanoid:LoadAnimation(a) 
-
+local idling = Instance.new("Sound", motorcycle.Parent)
+idling.SoundId = "rbxassetid://4935711515"
+idling.Looped = true
+idling.Volume = 1
+idling.RollOffMaxDistance = 1000000000000
+idling.RollOffMinDistance = 15
 --// Code \\--
-repeat wait() until game:IsLoaded()
-if game:IsLoaded() then 
-	LocalPlayer.Character.Humanoid.WalkSpeed = 30
-	p:Play()
-end 
+h.WalkSpeed = motorcyclespeed
+h.JumpHeight = 1.8
+h.JumpPower = 10
 
-UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == onbikebutton then
-		if LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled == true then
-			LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled = false
-			LocalPlayer.Character.Humanoid.WalkSpeed = 16
-			p:Stop()
+for a,a in pairs(c:GetDescendants())do 
+	if a.ClassName == "Part" then 
+		a.CustomPhysicalProperties = PhysicalProperties.new(0,0,0)
+	end 
+end
+
+UserInputService.InputBegan:Connect(function(i, t)
+	if i.KeyCode == nitrokeycode then
+		if t then return end
+		if onbike then
+			for a,a in pairs(c:GetDescendants())do 
+				if a.ClassName == "Part" then 
+					a.CustomPhysicalProperties = PhysicalProperties.new(0.05,0,0)
+					h.WalkSpeed += 10
+				end 
+			end
+		end
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(i, t)
+	if i.KeyCode == nitrokeycode then
+		if t then return end
+		if onbike then
+			for a,a in pairs(c:GetDescendants())do 
+				if a.ClassName == "Part" then 
+					a.CustomPhysicalProperties = PhysicalProperties.new(0,0,0)
+					h.WalkSpeed = 200
+				end 
+			end
+		end
+	end
+end)
+
+UserInputService.InputBegan:Connect(function(i)
+	if i.KeyCode == Enum.KeyCode.F then
+		if onbike == true then
 			onbike = false
+			motorcycle.Enabled = false
+			p:Stop()
+			for a,a in pairs(c:GetDescendants())do 
+				if a.ClassName == "Part" then 
+					a.CustomPhysicalProperties = PhysicalProperties.new(1,0,0)
+					h.WalkSpeed = 16
+					h.JumpHeight = 7.2
+					h.JumpPower = 50
+				end 
+			end
+			motorcycle.Parent.Anchored = true
+			game:GetService("ReplicatedStorage"):WaitForChild("Animate").Parent = c
 		else
-			LocalPlayer.Character:FindFirstChild("Bike").Handle.AccessoryWeld.Enabled = true
-			p:Play()
 			onbike = true
-		end
-	end
-end)
-
-UserInputService.InputBegan:Connect(function(Input)
-	if onbike == true then
-		if Input.KeyCode == SprintButton then
-			LocalPlayer.Character.Humanoid.WalkSpeed=80
-		end
-	end
-end)
-UserInputService.InputEnded:Connect(function(Input)
-	if onbike == true then
-		if Input.KeyCode == SprintButton then
-			LocalPlayer.Character.Humanoid.WalkSpeed=30
+			motorcycle.Enabled = true
+			p:Play()
+			for a,a in pairs(c:GetDescendants())do 
+				if a.ClassName == "Part" then 
+					a.CustomPhysicalProperties = PhysicalProperties.new(0,0,0)
+					h.WalkSpeed = 200
+					h.JumpHeight = 1.8
+					h.JumpPower = 10
+				end 
+			end
+			motorcycle.Parent.Anchored = false
+			c:WaitForChild("Animate").Parent = game:GetService("ReplicatedStorage")
 		end
 	end
 end)
 
 UserInputService.InputBegan:Connect(function(i, t)
 	if t then return end
-	if onbike == true then
-		if i.KeyCode == Enum.KeyCode.One then
-			LocalPlayer.Character.HumanoidRootPart.RootJoint.C1 = CFrame.Angles(-2.5,0,59.69)
+	if trick then
+		if i.KeyCode == trickkeycode then
+			motorcycle.C0 = CFrame.new(-0.04,0.36, 0)
+			motorcycle.C0 = CFrame.Angles(-30, rad(-90), rad(0)) -- -30, -90, 0
 		end
 	end
 end)
 
 UserInputService.InputEnded:Connect(function(i, t)
 	if t then return end
-	if onbike == true then
-		if i.KeyCode == Enum.KeyCode.One then
-			LocalPlayer.Character.HumanoidRootPart.RootJoint.C1 = CFrame.Angles(-1.57,0,59.69)
+	if trick then
+		if i.KeyCode == trickkeycode then
+			motorcycle.C0 = Vector3.new(rad(-0.04),rad(0.36), 0) -- -0.04
+			motorcycle.C0 = CFrame.Angles(0, rad(-90), 0)
 		end
 	end
 end)
 
-if not LocalPlayer.Character:FindFirstChild("Bike") then
-	LocalPlayer:Kick("Hat needed: https://web.roblox.com/catalog/5063566353/Atomic-Prussian-Bike")
-end
+p:Play()
+c:WaitForChild("Animate").Parent = game:GetService("ReplicatedStorage")
+idling:Play()
 
-if LocalPlayer.Character:FindFirstChild("RightUpperArm") then
-	LocalPlayer:Kick("This script is R6 only.")
-end
-local Notification = loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisBetterNotifications.lua"))()
+if showaccessories then
+	local AccessoryFirstPersonBody = false
+	game:GetService("RunService").RenderStepped:connect(function()
+		if (c:FindFirstChild("RightUpperArm") and c:FindFirstChild("LeftUpperArm")) then
+			-- detection
+			c:FindFirstChild("RightUpperArm").LocalTransparencyModifier = 0
 
+			c:FindFirstChild("RightLowerArm").LocalTransparencyModifier = 0
 
-local character = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait())
-local AccessoryFirstPersonBody = false
+			c:FindFirstChild("RightHand").LocalTransparencyModifier = 0
+			-- Right Arm
+			c:FindFirstChild("LeftUpperArm").LocalTransparencyModifier = 0
 
-game:GetService("RunService").RenderStepped:connect(function()
-	if (character:FindFirstChild("RightUpperArm") and character:FindFirstChild("LeftUpperArm")) then
-		-- detection
-		character:FindFirstChild("RightUpperArm").LocalTransparencyModifier = 0
+			c:FindFirstChild("LeftLowerArm").LocalTransparencyModifier = 0
 
-		character:FindFirstChild("RightLowerArm").LocalTransparencyModifier = 0
+			c:FindFirstChild("LeftHand").LocalTransparencyModifier = 0
+			-- Left Arm
+			c:FindFirstChild("RightUpperLeg").LocalTransparencyModifier = 0
 
-		character:FindFirstChild("RightHand").LocalTransparencyModifier = 0
-		-- Right Arm
-		character:FindFirstChild("LeftUpperArm").LocalTransparencyModifier = 0
+			c:FindFirstChild("RightLowerLeg").LocalTransparencyModifier = 0
 
-		character:FindFirstChild("LeftLowerArm").LocalTransparencyModifier = 0
+			c:FindFirstChild("RightFoot").LocalTransparencyModifier = 0
+			-- Right Leg
+			c:FindFirstChild("LeftUpperLeg").LocalTransparencyModifier = 0
 
-		character:FindFirstChild("LeftHand").LocalTransparencyModifier = 0
-		-- Left Arm
-		character:FindFirstChild("RightUpperLeg").LocalTransparencyModifier = 0
+			c:FindFirstChild("LeftLowerLeg").LocalTransparencyModifier = 0
 
-		character:FindFirstChild("RightLowerLeg").LocalTransparencyModifier = 0
+			c:FindFirstChild("LeftFoot").LocalTransparencyModifier = 0
+			-- Left Leg
+			c:FindFirstChild("UpperTorso").LocalTransparencyModifier = 0	
 
-		character:FindFirstChild("RightFoot").LocalTransparencyModifier = 0
-		-- Right Leg
-		character:FindFirstChild("LeftUpperLeg").LocalTransparencyModifier = 0
-
-		character:FindFirstChild("LeftLowerLeg").LocalTransparencyModifier = 0
-
-		character:FindFirstChild("LeftFoot").LocalTransparencyModifier = 0
-		-- Left Leg
-		character:FindFirstChild("UpperTorso").LocalTransparencyModifier = 0	
-
-		character:FindFirstChild("LowerTorso").LocalTransparencyModifier = 0	
-		-- Torso
-	end
-	game:GetService("RunService").RenderStepped:Wait()
-	if character:FindFirstChild("Head").LocalTransparencyModifier == 1 then
-		for i, a in pairs(character:GetChildren()) do
-			if a:IsA("Accessory") then
-				if not a:FindFirstChild("Handle"):FindFirstChild("HairAttachment") then
-					if not a:FindFirstChild("Handle"):FindFirstChild("FaceCenterAttachment") then
-						if not a:FindFirstChild("Handle"):FindFirstChild("HatAttachment") then
-							a:FindFirstChild("Handle").LocalTransparencyModifier = 0
-						end	
+			c:FindFirstChild("LowerTorso").LocalTransparencyModifier = 0	
+			-- Torso
+		end
+		game:GetService("RunService").RenderStepped:Wait()
+		if c:FindFirstChild("Head").LocalTransparencyModifier == 1 then
+			for i, a in pairs(c:GetChildren()) do
+				if a:IsA("Accessory") then
+					if not a:FindFirstChild("Handle"):FindFirstChild("HairAttachment") then
+						if not a:FindFirstChild("Handle"):FindFirstChild("FaceCenterAttachment") then
+							if not a:FindFirstChild("Handle"):FindFirstChild("HatAttachment") then
+								a:FindFirstChild("Handle").LocalTransparencyModifier = 0
+							end	
+						end
 					end
 				end
 			end
+			wait(0)
 		end
-		wait(0)
+	end)
+end
+
+while true do wait()
+	if h.Health == 0 then
+		idling:Destroy()
 	end
-end)
-
-
+end
